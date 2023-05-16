@@ -11,6 +11,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,7 +23,7 @@ public class BulletinController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Bulletin saveBulletin(@RequestBody BulletinDto bulletin){
+    public Bulletin saveBulletin(@Valid @RequestBody BulletinDto bulletin){
 
         return bulletinService.save(bulletin);
     }
@@ -43,7 +44,7 @@ public class BulletinController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Bulletin updateBulletin(@PathVariable("id") Long id, @RequestBody BulletinDto bulletinDto){
+    public Bulletin updateBulletin(@PathVariable("id") Long id, @Valid @RequestBody BulletinDto bulletinDto){
 
         return bulletinService.updateBulletin(id, bulletinDto);
     }

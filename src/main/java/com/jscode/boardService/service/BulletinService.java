@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.jscode.boardService.domain.ExceptionMessageConst.*;
+import static org.apache.logging.log4j.util.Strings.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,11 +55,19 @@ public class BulletinService {
     }
 
     public void deleteBulletin(Long id){
-        bulletinRepository.deleteById(id);
+        Bulletin bulletin = getBulletin(id);
+        bulletinRepository.deleteById(bulletin.getId());
     }
 
     public Page<Bulletin> searchTitle(String keyword, Pageable pageable){
-
+        checkKeyword(keyword);
         return bulletinRepository.findBulletinByTitleContaining(keyword, pageable);
+    }
+
+    private void checkKeyword(String keyword){
+
+        if(isEmpty(keyword) || isBlank(keyword)){
+            throw new IllegalArgumentException("검색어는 1글자 이상이어야합니다.");
+        }
     }
 }
