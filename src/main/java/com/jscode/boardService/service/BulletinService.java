@@ -38,6 +38,7 @@ public class BulletinService {
 
     public Bulletin getBulletin(Long id){
         Optional<Bulletin> result = bulletinRepository.findById(id);
+
         if(result.isPresent()){
             return result.get();
         }
@@ -55,8 +56,16 @@ public class BulletinService {
     }
 
     public void deleteBulletin(Long id){
-        Bulletin bulletin = getBulletin(id);
-        bulletinRepository.deleteById(bulletin.getId());
+        checkId(id);
+        bulletinRepository.deleteById(id);
+    }
+
+    private void checkId(Long id){
+        Optional<Bulletin> result = bulletinRepository.findById(id);
+
+        if(!result.isPresent()){
+            throw new IllegalArgumentException(NOT_EXIST_ID.getMessage());
+        }
     }
 
     public Page<Bulletin> searchTitle(String keyword, Pageable pageable){
