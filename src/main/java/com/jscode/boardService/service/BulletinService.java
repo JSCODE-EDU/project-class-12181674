@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.jscode.boardService.domain.ExceptionMessageConst.*;
+import static org.apache.logging.log4j.util.Strings.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class BulletinService {
 
     public Bulletin getBulletin(Long id){
         Optional<Bulletin> result = bulletinRepository.findById(id);
+
         if(result.isPresent()){
             return result.get();
         }
@@ -54,11 +56,27 @@ public class BulletinService {
     }
 
     public void deleteBulletin(Long id){
+        checkId(id);
         bulletinRepository.deleteById(id);
     }
 
-    public Page<Bulletin> searchTitle(String keyword, Pageable pageable){
+    private void checkId(Long id){
+        Optional<Bulletin> result = bulletinRepository.findById(id);
 
+        if(!result.isPresent()){
+            throw new IllegalArgumentException(NOT_EXIST_ID.getMessage());
+        }
+    }
+
+    public Page<Bulletin> searchTitle(String keyword, Pageable pageable){
+        checkKeyword(keyword);
         return bulletinRepository.findBulletinByTitleContaining(keyword, pageable);
+    }
+
+    private void checkKeyword(String keyword){
+
+        if(isEmpty(keyword) || isBlank(keyword)){
+            throw new IllegalArgumentException("검색어는 1글자 이상이어야합니다.");
+        }
     }
 }
