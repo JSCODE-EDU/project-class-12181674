@@ -12,32 +12,56 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jscode.boardService.domain.ExceptionMessageConst.UNEXPECTED_EXCEPTION;
+
+
 @RestControllerAdvice
 @Slf4j
 public class GeneralExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String IllegalArgumentHandler(IllegalArgumentException e) {
+    public ErrorResponse IllegalArgumentHandler(IllegalArgumentException e) {
+
         log.error(e.getMessage());
-        return e.getMessage();
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        ErrorResponse errorResponse = new ErrorResponse(status.value(), status.name(), e.getMessage());
+        return errorResponse;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public List<String> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public List<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException e) {
 
-        List<String> ErrorMeassage = getErrorMessage(e.getBindingResult());
+        List<ErrorResponse> errorResponse = getErrorResponse(e.getBindingResult());
 
-        log.error(ErrorMeassage.toString());
+        log.error(errorResponse.toString());
 
-        return ErrorMeassage;
+        return errorResponse;
     }
 
-    private List<String> getErrorMessage(BindingResult bindingResult){
-        List<String> result = new ArrayList<String>();
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse except(Exception e) {
+
+        log.error(e.getMessage());
+
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ErrorResponse errorResponse = new ErrorResponse(status.value(), status.name(), UNEXPECTED_EXCEPTION.getMessage());
+
+        return errorResponse;
+    }
+
+    private List<ErrorResponse> getErrorResponse(BindingResult bindingResult){
+
+        List<ErrorResponse> result = new ArrayList<ErrorResponse>();
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
         for (FieldError fieldError : bindingResult.getFieldErrors()) {
-            result.add(fieldError.getDefaultMessage());
+
+            ErrorResponse errorResponse = new ErrorResponse(status.value(), status.name(), fieldError.getDefaultMessage());
+            result.add(errorResponse);
         }
         return result;
     }
