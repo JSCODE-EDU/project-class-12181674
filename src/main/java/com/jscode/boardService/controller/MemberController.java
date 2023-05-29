@@ -1,6 +1,7 @@
 package com.jscode.boardService.controller;
 
 import com.jscode.boardService.domain.dto.MemberDto;
+import com.jscode.boardService.domain.dto.MemberInfoDto;
 import com.jscode.boardService.exception.ErrorResponse;
 import com.jscode.boardService.service.MemberService;
 import io.swagger.annotations.Api;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Api(tags = "회원관련 컨트롤러")
@@ -47,4 +49,10 @@ public class MemberController {
         return "로그인에 성공하였습니다.\n" + token;
     }
 
+    @GetMapping("/me")
+    @ResponseStatus(HttpStatus.OK)
+    public MemberInfoDto getMyInfo(HttpServletRequest request){
+
+        return memberService.getMemberInfo(request);
+    }
 }

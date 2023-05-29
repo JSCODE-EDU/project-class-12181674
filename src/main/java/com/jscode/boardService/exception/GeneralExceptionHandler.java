@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.jscode.boardService.domain.ExceptionMessageConst.UNEXPECTED_EXCEPTION;
+import static com.jscode.boardService.domain.ExceptionMessageConst.WRONG_TOKEN;
 
 
 @RestControllerAdvice
@@ -41,9 +42,21 @@ public class GeneralExceptionHandler {
         return errorResponse;
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(IllegalAccessError.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse tokenException(RuntimeException e){
+
+        log.error(e.getMessage());
+
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        ErrorResponse errorResponse = new ErrorResponse(status.value(), status.name(), e.getMessage());
+
+        return errorResponse;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse except(Exception e) {
+    public ErrorResponse except(RuntimeException e) {
 
         log.error(e.getMessage());
 

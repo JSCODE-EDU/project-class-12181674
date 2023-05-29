@@ -21,8 +21,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = jwtProvider.resolveToken(request);
 
         if (token != null && jwtProvider.validateToken(token)) {
-            // 토큰에서 Bearer 접두사 제거 및 앞뒤 공백 제거
-            token = token.split(" ")[1].trim();
             Authentication auth = jwtProvider.getAuthentication(token);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
