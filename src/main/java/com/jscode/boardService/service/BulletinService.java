@@ -43,7 +43,7 @@ public class BulletinService {
             return result.get();
         }
         else{
-            throw new IllegalArgumentException(NOT_EXIST_ID.getMessage());
+            throw new IllegalArgumentException(NOT_EXIST_Bulletin.getMessage());
         }
     }
 
@@ -64,7 +64,7 @@ public class BulletinService {
         Optional<Bulletin> result = bulletinRepository.findById(id);
 
         if(!result.isPresent()){
-            throw new IllegalArgumentException(NOT_EXIST_ID.getMessage());
+            throw new IllegalArgumentException(NOT_EXIST_Bulletin.getMessage());
         }
     }
 
