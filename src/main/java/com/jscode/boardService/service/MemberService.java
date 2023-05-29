@@ -58,6 +58,7 @@ public class MemberService {
 
     public MemberInfoDto getMemberInfo(HttpServletRequest request){
         String token = jwtProvider.resolveToken(request);
+        token = jwtProvider.getToken(token);
 
         String memberEmail = jwtProvider.getEmail(token);
 

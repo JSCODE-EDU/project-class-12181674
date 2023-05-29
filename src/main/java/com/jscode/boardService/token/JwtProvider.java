@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Date;
 
 import static com.jscode.boardService.domain.ExceptionMessageConst.NOT_EXIST_EMAIL;
-import static com.jscode.boardService.domain.ExceptionMessageConst.WRONG_TOKEN;
 
 @RequiredArgsConstructor
 @Component
@@ -76,26 +75,28 @@ public class JwtProvider {
 
     // Authorization Header를 통해 인증을 한다.
     public String resolveToken(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-
-        // Bearer 검증
-        if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
-            throw new IllegalAccessError(WRONG_TOKEN.getMessage());
-        }
-
-        // 토큰에서 Bearer 접두사 제거 및 앞뒤 공백 제거
-        token = token.split(" ")[1].trim();
-        return token;
+        return request.getHeader("Authorization");
     }
 
     // 토큰 검증 (유효성, 만료일자 파악)
     public boolean validateToken(String token) {
         try {
+            // Bearer 검증
+            if (!token.substring(0, "BEARER ".length()).equalsIgnoreCase("BEARER ")) {
+                return false;
+            } else {
+                token = getToken(token);
+            }
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             // 만료되었을 시 false
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public String getToken(String token) {
+        token = token.split(" ")[1].trim();
+        return token;
     }
 }
