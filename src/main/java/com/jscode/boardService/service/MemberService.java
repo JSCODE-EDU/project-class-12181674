@@ -1,6 +1,6 @@
 package com.jscode.boardService.service;
 
-import com.jscode.boardService.domain.JwtProvider;
+import com.jscode.boardService.token.JwtProvider;
 import com.jscode.boardService.domain.Member;
 import com.jscode.boardService.domain.dto.MemberDto;
 import com.jscode.boardService.repository.MemberRepository;

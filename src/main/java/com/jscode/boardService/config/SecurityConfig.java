@@ -1,10 +1,10 @@
 package com.jscode.boardService.config;
 
-import com.jscode.boardService.domain.JwtProvider;
+import com.jscode.boardService.token.JwtAuthenticationFilter;
+import com.jscode.boardService.token.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -13,7 +13,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -61,7 +60,8 @@ public class SecurityConfig {
                 // 회원가입과 로그인은 모두 승인
                 .antMatchers("/member", "/member/login").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
-                .anyRequest().denyAll()
+                // 나머지 api는 모두 인증 필요
+                .anyRequest().authenticated()
                 .and()
                 // JWT 인증 필터 적용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)

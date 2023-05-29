@@ -1,5 +1,6 @@
-package com.jscode.boardService.domain;
+package com.jscode.boardService.token;
 
+import com.jscode.boardService.domain.Member;
 import com.jscode.boardService.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -30,8 +31,8 @@ public class JwtProvider {
 
     private Key secretKey;
 
-    // 만료시간 : 1Hour
-    private final long exp = 1000L * 60 * 60;
+    // 만료시간 : 30 분
+    private final long exp = 1000L * 60 * 30;
 
     private final MemberRepository memberRepository;
 
@@ -45,24 +46,24 @@ public class JwtProvider {
         Claims claims = Jwts.claims().setSubject(account);
         Date now = new Date();
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + exp))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .setClaims(claims)  // 정보저장
+                .setIssuedAt(now)   // 토큰 발행시간 정보
+                .setExpiration(new Date(now.getTime() + exp))   // 토큰 유효시각 설정
+                .signWith(secretKey, SignatureAlgorithm.HS256)  //암호화 알고리즘, key 값
                 .compact();
     }
 
     // 권한정보 획득
     // Spring Security 인증과정에서 권한확인을 위한 기능
     public Authentication getAuthentication(String token) {
-        Member member = memberRepository.findMemberByEmail(this.getAccount(token)).orElseThrow(
+        Member member = memberRepository.findMemberByEmail(this.getEmail(token)).orElseThrow(
             () -> new IllegalArgumentException(NOT_EXIST_EMAIL.getMessage())
         );
         return new UsernamePasswordAuthenticationToken(member, "", Collections.emptyList());
     }
 
-    // 토큰에 담겨있는 유저 account 획득
-    public String getAccount(String token) {
+    // 토큰에 담겨있는 유저 정보 획득
+    public String getEmail(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 
@@ -71,7 +72,7 @@ public class JwtProvider {
         return request.getHeader("Authorization");
     }
 
-    // 토큰 검증
+    // 토큰 검증 (유효성, 만료일자 파악)
     public boolean validateToken(String token) {
         try {
             // Bearer 검증
