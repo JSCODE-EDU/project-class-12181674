@@ -51,6 +51,11 @@ public class MemberController {
 
     @GetMapping("/me")
     @ResponseStatus(HttpStatus.OK)
+    @ApiOperation(value = "회원 정보 조회 기능", notes = "JWT를 통한 정보 조회")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "조회 성공."),
+            @ApiResponse(code = 401, message = "인증되지않은 사용자 일 때", response = String.class)
+    })
     public MemberInfoDto getMyInfo(HttpServletRequest request){
 
         return memberService.getMemberInfo(request);

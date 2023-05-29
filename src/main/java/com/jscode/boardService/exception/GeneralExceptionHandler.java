@@ -44,7 +44,7 @@ public class GeneralExceptionHandler {
 
     @ExceptionHandler(IllegalAccessError.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public ErrorResponse tokenException(RuntimeException e){
+    public ErrorResponse tokenException(IllegalAccessError e){
 
         log.error(e.getMessage());
 
